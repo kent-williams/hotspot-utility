@@ -173,7 +173,9 @@ class _HotspotScreenState extends State<HotspotScreen> {
                   ListTile(
                     leading: Icon(Icons.wifi),
                     title: Text('Wi-Fi Network'),
-                    subtitle: Text(snapshot.data),
+                    subtitle: (snapshot.data == "")
+                        ? Text("Not Connected")
+                        : Text(snapshot.data),
                     trailing: StreamBuilder<bool>(
                         stream: charReadStatusStreamController.stream,
                         initialData: false,

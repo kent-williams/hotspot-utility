@@ -45,6 +45,15 @@ class _WifiConnectScreenState extends State<WifiConnectScreen> {
   @protected
   @mustCallSuper
   void initState() {
+    widget.wifiSsidChar.setNotifyValue(true).then((value) {
+      print("WiFi SSID Char Notification Enabled Result: " + value.toString());
+
+      widget.wifiConnectChar.setNotifyValue(true).then((value) {
+        print("WiFi Connect Char Notification Enabled Result: " +
+            value.toString());
+      });
+    });
+
     wifiConnectionStatusStreamController.add('');
     wifiConnectionSuccessStreamController.add(false);
   }
@@ -62,39 +71,93 @@ class _WifiConnectScreenState extends State<WifiConnectScreen> {
     wifiCredentials.service = widget.wifiNetworkSelected;
     wifiCredentials.password = password;
 
-    if (widget.currentWifiSsid != "" || widget.currentWifiSsid != null) {
+    print("current WiFi ssid: " + widget.currentWifiSsid);
+
+    if (widget.currentWifiSsid != "" && widget.currentWifiSsid != null) {
+      // Remove Currently Connected WiFi Network
       wifiSsidRemove.service = widget.currentWifiSsid;
-      await widget.wifiRemoveChar.write(wifiSsidRemove.writeToBuffer());
-    }
+      print("network to remove: " + wifiSsidRemove.service.toString());
+      widget.wifiRemoveChar.write(wifiSsidRemove.writeToBuffer()).then((value) {
+        print("Remove Current WiFi SSID Write Result: " + value.toString());
 
-    if (widget.wifiConfiguredServices.length > 0) {
-      wifiSsidRemove.service = widget.wifiConfiguredServices[0];
-      await widget.wifiRemoveChar.write(wifiSsidRemove.writeToBuffer());
-    }
+        // Check if there are any other WiFi Configure Services
+        print(
+            "Configured Services: " + widget.wifiConfiguredServices.toString());
 
-    await widget.wifiConnectChar.write(wifiCredentials.writeToBuffer());
-    wifiConnectionStatusStreamController.add("Connecting...");
-  }
+        if (widget.wifiConfiguredServices.length > 0) {
+          // Remove WiFi Configured Services
+          wifiSsidRemove.service = widget.wifiConfiguredServices[0];
+          print("configured network to remove: " +
+              wifiSsidRemove.service.toString());
+          widget.wifiRemoveChar
+              .write(wifiSsidRemove.writeToBuffer())
+              .then((value) {
+            print("Remove Configured WiFi SSID Write Result: " +
+                value.toString());
 
-  Widget _buildSsidValue() {
-    if (widget.wifiSsidChar != null) {
-      return StreamBuilder<List<int>>(
-          stream: widget.wifiSsidChar.value,
-          builder: (BuildContext context, AsyncSnapshot<List<int>> snapshot) {
-            if (snapshot.hasData) {
-              if (widget.wifiNetworkSelected ==
-                  new String.fromCharCodes(snapshot.data)) {
-                wifiConnectionStatusStreamController.add("Connected");
-                wifiConnectionSuccessStreamController.add(true);
-              } else if (new String.fromCharCodes(snapshot.data) != "") {
-                wifiConnectionStatusStreamController.add("Not Connected");
-              }
-              return Container();
-            } else
-              return Container();
+            // Connect to new WiFi Network
+            wifiConnectionStatusStreamController.add("Connecting...");
+            widget.wifiConnectChar
+                .write(wifiCredentials.writeToBuffer())
+                .then((value) {
+              print("WiFi Connect Char Result: " + value.toString());
+            });
           });
-    } else
-      return Container();
+        } else {
+          // Connect to new WiFi Network
+          wifiConnectionStatusStreamController.add("Connecting...");
+          widget.wifiConnectChar
+              .write(wifiCredentials.writeToBuffer())
+              .then((value) {
+            print("WiFi Connect Char Result: " + value.toString());
+          });
+        }
+      });
+    } else {
+      // Check if there are any other WiFi Configure Services
+      print("Configured Services: " + widget.wifiConfiguredServices.toString());
+
+      if (widget.wifiConfiguredServices.length > 0) {
+        // Remove WiFi Configured Services
+        wifiSsidRemove.service = widget.wifiConfiguredServices[0];
+        print("configured network to remove: " +
+            wifiSsidRemove.service.toString());
+        widget.wifiRemoveChar
+            .write(wifiSsidRemove.writeToBuffer())
+            .then((value) {
+          print(
+              "Remove Configured WiFi SSID Write Result: " + value.toString());
+
+          // Connect to new WiFi Network
+          wifiConnectionStatusStreamController.add("Connecting...");
+          widget.wifiConnectChar
+              .write(wifiCredentials.writeToBuffer())
+              .then((value) {
+            print("WiFi Connect Char Result: " + value.toString());
+          });
+        });
+      } else {
+        // Connect to new WiFi Network
+        wifiConnectionStatusStreamController.add("Connecting...");
+        widget.wifiConnectChar
+            .write(wifiCredentials.writeToBuffer())
+            .then((value) {
+          print("WiFi Connect Char Result: " + value.toString());
+        });
+      }
+    }
+
+//    print("Configured Services: " + widget.wifiConfiguredServices.toString());
+//
+//    if (widget.wifiConfiguredServices.length > 0) {
+//      wifiSsidRemove.service = widget.wifiConfiguredServices[0];
+//      print(
+//          "configured network to remove: " + wifiSsidRemove.service.toString());
+//      await widget.wifiRemoveChar.write(wifiSsidRemove.writeToBuffer());
+//    }
+
+//    await widget.wifiConnectChar.write(wifiCredentials.writeToBuffer());
+//    wifiConnectionStatusStreamController.add("Connecting...");
   }
 
   @override
@@ -145,12 +208,42 @@ class _WifiConnectScreenState extends State<WifiConnectScreen> {
           controller: passwordController,
           obscureText: _obscureText,
         ),
-        FutureBuilder<bool>(
-            future: widget.wifiSsidChar.setNotifyValue(true),
-            builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
-              return Container();
+        StreamBuilder<List<int>>(
+            stream: widget.wifiSsidChar.value,
+            builder: (BuildContext context, AsyncSnapshot<List<int>> snapshot) {
+              if (snapshot.hasData) {
+                print("WiFi SSID: " + new String.fromCharCodes(snapshot.data));
+                if (widget.wifiNetworkSelected ==
+                    new String.fromCharCodes(snapshot.data)) {
+                  wifiConnectionStatusStreamController.add("Connected");
+                  wifiConnectionSuccessStreamController.add(true);
+                } else if (new String.fromCharCodes(snapshot.data) != "") {
+                  wifiConnectionStatusStreamController.add("Not Connected");
+                }
+                return Container();
+              } else
+                return Container();
             }),
-        _buildSsidValue(),
+        StreamBuilder<List<int>>(
+            stream: widget.wifiConnectChar.value,
+            builder: (BuildContext context, AsyncSnapshot<List<int>> snapshot) {
+              if (snapshot.hasData) {
+                print(
+                    "WiFi Connect: " + new String.fromCharCodes(snapshot.data));
+                if ("connected" ==
+                    new String.fromCharCodes(snapshot.data)) {
+                  wifiConnectionStatusStreamController.add("Connected");
+                  wifiConnectionSuccessStreamController.add(true);
+                } else if ("failure" ==
+                        new String.fromCharCodes(snapshot.data) ||
+                    "failed" == new String.fromCharCodes(snapshot.data)) {
+                  wifiConnectionStatusStreamController.add("Failed");
+                  wifiConnectionSuccessStreamController.add(false);
+                }
+                return Container();
+              } else
+                return Container();
+            }),
         SizedBox(
             width: double.infinity,
             child: RaisedButton(
