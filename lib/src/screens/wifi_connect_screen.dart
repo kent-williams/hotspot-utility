@@ -84,6 +84,7 @@ class _WifiConnectScreenState extends State<WifiConnectScreen> {
         print(
             "Configured Services: " + widget.wifiConfiguredServices.toString());
 
+        // Check if any WiFi Networks are already Configured
         if (widget.wifiConfiguredServices.length > 0) {
           // Remove WiFi Configured Services
           wifiSsidRemove.service = widget.wifiConfiguredServices[0];
@@ -113,10 +114,11 @@ class _WifiConnectScreenState extends State<WifiConnectScreen> {
           });
         }
       });
-    } else {
+    } else { //
       // Check if there are any other WiFi Configure Services
       print("Configured Services: " + widget.wifiConfiguredServices.toString());
 
+      // Check if any WiFi Networks are already Configured
       if (widget.wifiConfiguredServices.length > 0) {
         // Remove WiFi Configured Services
         wifiSsidRemove.service = widget.wifiConfiguredServices[0];
@@ -146,18 +148,6 @@ class _WifiConnectScreenState extends State<WifiConnectScreen> {
         });
       }
     }
-
-//    print("Configured Services: " + widget.wifiConfiguredServices.toString());
-//
-//    if (widget.wifiConfiguredServices.length > 0) {
-//      wifiSsidRemove.service = widget.wifiConfiguredServices[0];
-//      print(
-//          "configured network to remove: " + wifiSsidRemove.service.toString());
-//      await widget.wifiRemoveChar.write(wifiSsidRemove.writeToBuffer());
-//    }
-
-//    await widget.wifiConnectChar.write(wifiCredentials.writeToBuffer());
-//    wifiConnectionStatusStreamController.add("Connecting...");
   }
 
   @override
@@ -198,7 +188,7 @@ class _WifiConnectScreenState extends State<WifiConnectScreen> {
                 color: Theme.of(context).primaryColorDark,
               ),
               onPressed: () {
-                // Update the state i.e. toogle the state of passwordVisible variable
+                // Update the state i.e. toggle the state of password Visible variable
                 setState(() {
                   _obscureText = !_obscureText;
                 });
@@ -230,13 +220,13 @@ class _WifiConnectScreenState extends State<WifiConnectScreen> {
               if (snapshot.hasData) {
                 print(
                     "WiFi Connect: " + new String.fromCharCodes(snapshot.data));
-                if ("connected" ==
-                    new String.fromCharCodes(snapshot.data)) {
+                if ("connected" == new String.fromCharCodes(snapshot.data)) {
                   wifiConnectionStatusStreamController.add("Connected");
                   wifiConnectionSuccessStreamController.add(true);
-                } else if ("failure" ==
+                } else if ("not_found" ==
                         new String.fromCharCodes(snapshot.data) ||
-                    "failed" == new String.fromCharCodes(snapshot.data)) {
+                    "failed" == new String.fromCharCodes(snapshot.data) ||
+                    "invalid" == new String.fromCharCodes(snapshot.data)) {
                   wifiConnectionStatusStreamController.add("Failed");
                   wifiConnectionSuccessStreamController.add(false);
                 }
