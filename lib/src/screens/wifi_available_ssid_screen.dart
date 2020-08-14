@@ -29,6 +29,7 @@ class WifiAvailableScreen extends StatefulWidget {
 class _WifiAvailableScreenState extends State<WifiAvailableScreen> {
   StreamController<List<String>> wifiSsidListStreamController =
       StreamController<List<String>>();
+
   List<String> configuredSsidResults;
 
   @override
@@ -43,19 +44,19 @@ class _WifiAvailableScreenState extends State<WifiAvailableScreen> {
     super.initState();
     wifiSsidListStreamController.add([]);
 
-    widget.wifiServicesChar.read().then((value) {
-      if (new String.fromCharCodes(value) != "failed") {
-        var availableSsidResults =
-            protos.wifi_services_v1.fromBuffer(value).services;
-        wifiSsidListStreamController.add(availableSsidResults);
-      }
+    widget.wifiConfiguredServicesChar.read().then((value) {
+      configuredSsidResults =
+          protos.wifi_services_v1.fromBuffer(value).services.toList();
 
-      widget.wifiConfiguredServicesChar.read().then((value) {
-        configuredSsidResults =
-            protos.wifi_services_v1.fromBuffer(value).services.toList();
-      }).catchError((e) {
-        print("Error: wifiConfiguredServices Failure: ${e.toString()}");
+      widget.wifiServicesChar.read().then((value) {
+        if (new String.fromCharCodes(value) != "failed") {
+          var availableSsidResults =
+              protos.wifi_services_v1.fromBuffer(value).services;
+          wifiSsidListStreamController.add(availableSsidResults);
+        }
       });
+    }).catchError((e) {
+      print("Error: wifiConfiguredServices Failure: ${e.toString()}");
     });
   }
 
