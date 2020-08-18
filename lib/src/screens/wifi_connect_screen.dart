@@ -225,6 +225,7 @@ class _WifiConnectScreenState extends State<WifiConnectScreen> {
                   wifiConnectionSuccessStreamController.add(true);
                 } else if ("not_found" ==
                         new String.fromCharCodes(snapshot.data) ||
+                    "error" == new String.fromCharCodes(snapshot.data) ||
                     "failed" == new String.fromCharCodes(snapshot.data) ||
                     "invalid" == new String.fromCharCodes(snapshot.data)) {
                   wifiConnectionStatusStreamController.add("Failed");
