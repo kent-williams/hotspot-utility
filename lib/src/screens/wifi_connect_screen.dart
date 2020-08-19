@@ -252,7 +252,7 @@ class _WifiConnectScreenState extends State<WifiConnectScreen> {
                 onPressed: () =>
                     Navigator.of(context).popUntil((route) => route.isFirst),
                 child: Text(
-                  "Back Home",
+                  "Back to Hotspots",
                   style: Theme.of(context)
                       .primaryTextTheme
                       .button
