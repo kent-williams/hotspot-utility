@@ -66,6 +66,9 @@ class _HotspotScreenState extends State<HotspotScreen> {
                 .then((value) {
               var parsed = json.decode(value.body);
               hotspotNameStreamController.add(parsed['data']['name']);
+            })
+            .catchError((e) {
+              print("Helium API Error");
             });
             // current wifi ssid
             wifiSsidChar.read().then((value) {
