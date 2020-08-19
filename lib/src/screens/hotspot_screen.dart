@@ -19,6 +19,7 @@ class _HotspotScreenState extends State<HotspotScreen> {
   BluetoothCharacteristic wifiConnectChar;
   BluetoothCharacteristic wifiRemoveChar;
   BluetoothCharacteristic ethernetOnlineChar;
+  BluetoothCharacteristic hotspotFirmwareChar;
   BluetoothCharacteristic publicKeyChar;
 
   bool wifiSsidBuilt = false;
@@ -34,6 +35,8 @@ class _HotspotScreenState extends State<HotspotScreen> {
       StreamController<bool>.broadcast();
   StreamController<String> ethernetStatusStreamController =
       StreamController<String>();
+  StreamController<String> hotspotFirmwareStreamController =
+  StreamController<String>();
 
   @override
   void dispose() {
@@ -42,6 +45,7 @@ class _HotspotScreenState extends State<HotspotScreen> {
     wifiSsidStreamController.close();
     charReadStatusStreamController.close();
     ethernetStatusStreamController.close();
+    hotspotFirmwareStreamController.close();
   }
 
   @protected
@@ -52,6 +56,7 @@ class _HotspotScreenState extends State<HotspotScreen> {
     wifiSsidStreamController.add('');
     charReadStatusStreamController.add(false);
     ethernetStatusStreamController.add('');
+    hotspotFirmwareStreamController.add('');
 
     widget.device.state.listen((connectionState) {
       if (connectionState == BluetoothDeviceState.connected) {
@@ -77,8 +82,6 @@ class _HotspotScreenState extends State<HotspotScreen> {
               wifiSsidStreamController.add(wifiSsidResult);
               // ethernet status
               ethernetOnlineChar.read().then((value) {
-                // indicate last char read is done
-                charReadStatusStreamController.add(true);
                 var ethernetStatusResult = new String.fromCharCodes(value);
                 // add result to stream
                 if (ethernetStatusResult == 'true') {
@@ -86,6 +89,12 @@ class _HotspotScreenState extends State<HotspotScreen> {
                 } else {
                   ethernetStatusStreamController.add('Disconnected');
                 }
+                hotspotFirmwareChar.read().then((value) {
+                  // indicate last char read is done
+                  charReadStatusStreamController.add(true);
+                  // add result to stream
+                  hotspotFirmwareStreamController.add(new String.fromCharCodes(value));
+                });
               });
             });
           });
@@ -98,6 +107,9 @@ class _HotspotScreenState extends State<HotspotScreen> {
     if (services != null) {
       var hotspotService = services.singleWhere(
           (s) => s.uuid.toString() == "0fda92b2-44a2-4af2-84f5-fa682baa2b8d",
+          orElse: () => null);
+      var deviceInformationService = services.singleWhere(
+              (s) => s.uuid.toString() == "0000180a-0000-1000-8000-00805f9b34fb",
           orElse: () => null);
       if (hotspotService != null) {
         wifiSsidChar = hotspotService.characteristics.singleWhere(
@@ -117,6 +129,9 @@ class _HotspotScreenState extends State<HotspotScreen> {
             orElse: () => null);
         ethernetOnlineChar = hotspotService.characteristics.singleWhere(
             (c) => c.uuid.toString() == "e5866bd6-0288-4476-98ca-ef7da6b4d289",
+            orElse: () => null);
+        hotspotFirmwareChar = deviceInformationService.characteristics.singleWhere(
+                (c) => c.uuid.toString() == "00002a26-0000-1000-8000-00805f9b34fb",
             orElse: () => null);
         publicKeyChar = hotspotService.characteristics.singleWhere(
             (c) => c.uuid.toString() == "0a852c59-50d3-4492-bfd3-22fe58a24f01",
@@ -217,6 +232,18 @@ class _HotspotScreenState extends State<HotspotScreen> {
                     title: Text('Ethernet'),
                     subtitle: Text(snapshot.data),
                     trailing: Text('Auto Connects'),
+                  )
+                ]);
+              }),
+          StreamBuilder<String>(
+              stream: hotspotFirmwareStreamController.stream,
+              initialData: '',
+              builder: (c, snapshot) {
+                return Column(children: <Widget>[
+                  ListTile(
+                    leading: Icon(Icons.system_update),
+                    title: Text('Firmware Version'),
+                    subtitle: Text(snapshot.data),
                   )
                 ]);
               })
