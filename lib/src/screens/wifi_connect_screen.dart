@@ -114,7 +114,8 @@ class _WifiConnectScreenState extends State<WifiConnectScreen> {
           });
         }
       });
-    } else { //
+    } else {
+      //
       // Check if there are any other WiFi Configure Services
       print("Configured Services: " + widget.wifiConfiguredServices.toString());
 
@@ -158,46 +159,52 @@ class _WifiConnectScreenState extends State<WifiConnectScreen> {
         actions: <Widget>[],
       ),
       body: Column(children: <Widget>[
-        ListTile(
-          title: Text(widget.wifiNetworkSelected),
-          leading: StreamBuilder<bool>(
-              stream: wifiConnectionSuccessStreamController.stream,
-              initialData: false,
-              builder: (c, snapshot) {
-                if (snapshot.data == true) {
-                  return Icon(Icons.check_circle);
-                } else {
-                  return Icon(Icons.wifi_lock);
-                }
-              }),
-          trailing: StreamBuilder<String>(
-              stream: wifiConnectionStatusStreamController.stream,
-              initialData: "",
-              builder: (c, snapshot) {
-                return Text(snapshot.data);
-              }),
-        ),
-        TextFormField(
-          decoration: InputDecoration(
-            labelText: 'Password',
-            hintText: 'Enter Wi-Fi Password Here',
-            suffixIcon: IconButton(
-              icon: Icon(
-                // Based on passwordVisible state choose the icon
-                _obscureText ? Icons.visibility : Icons.visibility_off,
-                color: Theme.of(context).primaryColorDark,
+        Container(
+            width: double.infinity,
+            margin: const EdgeInsets.only(top: 10.0, left: 30.0, right: 30.0),
+            child: ListTile(
+              title: Text(widget.wifiNetworkSelected),
+              leading: StreamBuilder<bool>(
+                  stream: wifiConnectionSuccessStreamController.stream,
+                  initialData: false,
+                  builder: (c, snapshot) {
+                    if (snapshot.data == true) {
+                      return Icon(Icons.check_circle);
+                    } else {
+                      return Icon(Icons.wifi_lock);
+                    }
+                  }),
+              trailing: StreamBuilder<String>(
+                  stream: wifiConnectionStatusStreamController.stream,
+                  initialData: "",
+                  builder: (c, snapshot) {
+                    return Text(snapshot.data);
+                  }),
+            )),
+        Container(
+            width: double.infinity,
+            margin: const EdgeInsets.only(top: 10.0, left: 40.0, right: 40.0),
+            child: TextFormField(
+              decoration: InputDecoration(
+                labelText: 'Password',
+                hintText: 'Enter Wi-Fi Password Here',
+                suffixIcon: IconButton(
+                  icon: Icon(
+                    // Based on passwordVisible state choose the icon
+                    _obscureText ? Icons.visibility : Icons.visibility_off,
+                    color: Theme.of(context).primaryColorDark,
+                  ),
+                  onPressed: () {
+                    // Update the state i.e. toggle the state of password Visible variable
+                    setState(() {
+                      _obscureText = !_obscureText;
+                    });
+                  },
+                ),
               ),
-              onPressed: () {
-                // Update the state i.e. toggle the state of password Visible variable
-                setState(() {
-                  _obscureText = !_obscureText;
-                });
-              },
-            ),
-          ),
-          controller: passwordController,
-          obscureText: _obscureText,
-        ),
+              controller: passwordController,
+              obscureText: _obscureText,
+            )),
         StreamBuilder<List<int>>(
             stream: widget.wifiSsidChar.value,
             builder: (BuildContext context, AsyncSnapshot<List<int>> snapshot) {
@@ -235,8 +242,9 @@ class _WifiConnectScreenState extends State<WifiConnectScreen> {
               } else
                 return Container();
             }),
-        SizedBox(
+        Container(
             width: double.infinity,
+            margin: const EdgeInsets.only(top: 10.0, left: 40.0, right: 40.0),
             child: RaisedButton(
                 onPressed: () => _writeWifiCredentials(passwordController.text),
                 child: Text(
@@ -246,8 +254,9 @@ class _WifiConnectScreenState extends State<WifiConnectScreen> {
                       .button
                       .copyWith(color: Colors.black),
                 ))),
-        SizedBox(
+        Container(
             width: double.infinity,
+            margin: const EdgeInsets.only(top: 10.0, left: 40.0, right: 40.0),
             child: RaisedButton(
                 onPressed: () =>
                     Navigator.of(context).popUntil((route) => route.isFirst),
