@@ -20,6 +20,7 @@ class _HotspotScreenState extends State<HotspotScreen> {
   BluetoothCharacteristic wifiRemoveChar;
   BluetoothCharacteristic ethernetOnlineChar;
   BluetoothCharacteristic hotspotFirmwareChar;
+  BluetoothCharacteristic hotspotSerialChar;
   BluetoothCharacteristic publicKeyChar;
 
   bool wifiSsidBuilt = false;
@@ -36,7 +37,9 @@ class _HotspotScreenState extends State<HotspotScreen> {
   StreamController<String> ethernetStatusStreamController =
       StreamController<String>();
   StreamController<String> hotspotFirmwareStreamController =
-  StreamController<String>();
+      StreamController<String>();
+  StreamController<String> hotspotSerialStreamController =
+      StreamController<String>();
 
   @override
   void dispose() {
@@ -46,6 +49,7 @@ class _HotspotScreenState extends State<HotspotScreen> {
     charReadStatusStreamController.close();
     ethernetStatusStreamController.close();
     hotspotFirmwareStreamController.close();
+    hotspotSerialStreamController.close();
   }
 
   @protected
@@ -57,6 +61,7 @@ class _HotspotScreenState extends State<HotspotScreen> {
     charReadStatusStreamController.add(false);
     ethernetStatusStreamController.add('');
     hotspotFirmwareStreamController.add('');
+    hotspotSerialStreamController.add('');
 
     widget.device.state.listen((connectionState) {
       if (connectionState == BluetoothDeviceState.connected) {
@@ -71,8 +76,7 @@ class _HotspotScreenState extends State<HotspotScreen> {
                 .then((value) {
               var parsed = json.decode(value.body);
               hotspotNameStreamController.add(parsed['data']['name']);
-            })
-            .catchError((e) {
+            }).catchError((e) {
               print("Helium API Error");
             });
             // current wifi ssid
@@ -89,11 +93,19 @@ class _HotspotScreenState extends State<HotspotScreen> {
                 } else {
                   ethernetStatusStreamController.add('Disconnected');
                 }
+                // hotspot firmware version
                 hotspotFirmwareChar.read().then((value) {
-                  // indicate last char read is done
-                  charReadStatusStreamController.add(true);
                   // add result to stream
-                  hotspotFirmwareStreamController.add(new String.fromCharCodes(value));
+                  hotspotFirmwareStreamController
+                      .add(new String.fromCharCodes(value));
+                  // hotspot serial number
+                  hotspotSerialChar.read().then((value) {
+                    // indicate last char read is done
+                    charReadStatusStreamController.add(true);
+                    // add result to stream
+                    hotspotSerialStreamController
+                        .add(new String.fromCharCodes(value));
+                  });
                 });
               });
             });
@@ -109,7 +121,7 @@ class _HotspotScreenState extends State<HotspotScreen> {
           (s) => s.uuid.toString() == "0fda92b2-44a2-4af2-84f5-fa682baa2b8d",
           orElse: () => null);
       var deviceInformationService = services.singleWhere(
-              (s) => s.uuid.toString() == "0000180a-0000-1000-8000-00805f9b34fb",
+          (s) => s.uuid.toString() == "0000180a-0000-1000-8000-00805f9b34fb",
           orElse: () => null);
       if (hotspotService != null) {
         wifiSsidChar = hotspotService.characteristics.singleWhere(
@@ -130,9 +142,16 @@ class _HotspotScreenState extends State<HotspotScreen> {
         ethernetOnlineChar = hotspotService.characteristics.singleWhere(
             (c) => c.uuid.toString() == "e5866bd6-0288-4476-98ca-ef7da6b4d289",
             orElse: () => null);
-        hotspotFirmwareChar = deviceInformationService.characteristics.singleWhere(
-                (c) => c.uuid.toString() == "00002a26-0000-1000-8000-00805f9b34fb",
-            orElse: () => null);
+        hotspotFirmwareChar = deviceInformationService.characteristics
+            .singleWhere(
+                (c) =>
+                    c.uuid.toString() == "00002a26-0000-1000-8000-00805f9b34fb",
+                orElse: () => null);
+        hotspotSerialChar = deviceInformationService.characteristics
+            .singleWhere(
+                (c) =>
+                    c.uuid.toString() == "00002a25-0000-1000-8000-00805f9b34fb",
+                orElse: () => null);
         publicKeyChar = hotspotService.characteristics.singleWhere(
             (c) => c.uuid.toString() == "0a852c59-50d3-4492-bfd3-22fe58a24f01",
             orElse: () => null);
@@ -146,16 +165,7 @@ class _HotspotScreenState extends State<HotspotScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: StreamBuilder<String>(
-            stream: hotspotNameStreamController.stream,
-            initialData: '',
-            builder: (c, snapshot) {
-              if (snapshot.data != '') {
-                return Text(snapshot.data);
-              } else {
-                return Text('');
-              }
-            }),
+        title: Text('Hotspot Settings'),
         actions: <Widget>[],
       ),
       body: SingleChildScrollView(
@@ -189,7 +199,6 @@ class _HotspotScreenState extends State<HotspotScreen> {
               builder: (c, snapshot) {
                 return Column(children: <Widget>[
                   ListTile(
-                    leading: Icon(Icons.wifi),
                     title: Text('Wi-Fi Network'),
                     subtitle: Text(snapshot.data),
                     trailing: StreamBuilder<bool>(
@@ -197,9 +206,10 @@ class _HotspotScreenState extends State<HotspotScreen> {
                         initialData: false,
                         builder: (c, snapshot) {
                           if (snapshot.data == true) {
-                            return IconButton(
-                              icon: Icon(Icons.settings),
-                              tooltip: 'Configure Wi-Fi Network',
+                            return RaisedButton(
+                              child: Text('CONFIGURE'),
+                              color: Colors.black,
+                              textColor: Colors.white,
                               onPressed: () {
                                 Navigator.of(context)
                                     .push(MaterialPageRoute(builder: (context) {
@@ -228,10 +238,19 @@ class _HotspotScreenState extends State<HotspotScreen> {
               builder: (c, snapshot) {
                 return Column(children: <Widget>[
                   ListTile(
-                    leading: Icon(Icons.settings_ethernet),
                     title: Text('Ethernet'),
                     subtitle: Text(snapshot.data),
-                    trailing: Text('Auto Connects'),
+                  )
+                ]);
+              }),
+          StreamBuilder<String>(
+              stream: hotspotNameStreamController.stream,
+              initialData: '',
+              builder: (c, snapshot) {
+                return Column(children: <Widget>[
+                  ListTile(
+                    title: Text('Name'),
+                    subtitle: Text(snapshot.data),
                   )
                 ]);
               }),
@@ -241,12 +260,22 @@ class _HotspotScreenState extends State<HotspotScreen> {
               builder: (c, snapshot) {
                 return Column(children: <Widget>[
                   ListTile(
-                    leading: Icon(Icons.system_update),
                     title: Text('Firmware Version'),
                     subtitle: Text(snapshot.data),
                   )
                 ]);
-              })
+              }),
+          StreamBuilder<String>(
+              stream: hotspotSerialStreamController.stream,
+              initialData: '',
+              builder: (c, snapshot) {
+                return Column(children: <Widget>[
+                  ListTile(
+                    title: Text('Serial Number'),
+                    subtitle: Text(snapshot.data),
+                  )
+                ]);
+              }),
         ]),
       ),
     );
