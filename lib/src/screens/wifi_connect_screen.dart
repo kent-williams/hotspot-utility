@@ -235,6 +235,12 @@ class _WifiConnectScreenState extends State<WifiConnectScreen> {
                     "error" == new String.fromCharCodes(snapshot.data) ||
                     "failed" == new String.fromCharCodes(snapshot.data) ||
                     "invalid" == new String.fromCharCodes(snapshot.data)) {
+                  // Remove WiFi Network After Failure
+                  var wifiSsidRemove = protos.wifi_remove_v1.create();
+                  wifiSsidRemove.service = widget.wifiNetworkSelected;
+                  print("network to remove after failure: " + wifiSsidRemove.service.toString());
+                  widget.wifiRemoveChar.write(wifiSsidRemove.writeToBuffer()).then((value) {
+                  });
                   wifiConnectionStatusStreamController.add("Failed");
                   wifiConnectionSuccessStreamController.add(false);
                 }
