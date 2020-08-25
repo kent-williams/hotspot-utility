@@ -107,7 +107,7 @@ class _FindDevicesScreenState extends State<FindDevicesScreen> {
                             child: Container(
                               height: 210,
                               child: Text(
-                                'To scan for hotspots, first press the black button on the left the side of your hotspot, wait for the hotspot LED to turn blue, then press the magnifying glass button in the bottom right of the app to scan.',
+                                'To scan for hotspots, first press the black button on the left side of your hotspot, wait for the hotspot LED to turn blue, then press the magnifying glass button in the bottom right of the app to scan.',
                                 style: Theme.of(context)
                                     .textTheme
                                     .headline
