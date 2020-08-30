@@ -25,7 +25,7 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSBluetoothAlwaysUsageDescription</key>
-	<string>Access Bluetooth</string>
+	<string>This app requires bluetooth to connect to Hotspots</string>
 	<key>NSBluetoothPeripheralUsageDescription</key>
 	<string>This app requires bluetooth to connect to Hotspots</string>
 	<key>UILaunchStoryboardName</key>
