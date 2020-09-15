@@ -94,8 +94,9 @@ class _FindDevicesScreenState extends State<FindDevicesScreen> {
                   initialData: false,
                   builder: (c, snapshot) {
                     if (snapshot.data == true) {
-                      return Center(
-                        child: Card(
+                      return
+                        SizedBox(
+                          child: Card(
                           color: Colors.white,
                           margin: EdgeInsets.all(20),
                           elevation: 5.0,
@@ -105,7 +106,6 @@ class _FindDevicesScreenState extends State<FindDevicesScreen> {
                               print('Card tapped.');
                             },
                             child: Container(
-                              height: 210,
                               child: Text(
                                 'To scan for hotspots, first press the black button on the left side of your hotspot, wait for the hotspot LED to turn blue, then press the magnifying glass button in the bottom right of the app to scan.',
                                 style: Theme.of(context)
