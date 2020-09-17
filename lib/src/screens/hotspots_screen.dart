@@ -62,6 +62,7 @@ class FindDevicesScreen extends StatefulWidget {
 
 class _FindDevicesScreenState extends State<FindDevicesScreen> {
   StreamController<bool> showTipCardStreamController = StreamController<bool>();
+  bool scanned = false;
 
   @override
   void dispose() {
@@ -94,17 +95,13 @@ class _FindDevicesScreenState extends State<FindDevicesScreen> {
                   initialData: false,
                   builder: (c, snapshot) {
                     if (snapshot.data == true) {
-                      return
-                        SizedBox(
-                          child: Card(
+                      return SizedBox(
+                        child: Card(
                           color: Colors.white,
                           margin: EdgeInsets.all(20),
                           elevation: 5.0,
                           child: InkWell(
                             splashColor: Colors.blue.withAlpha(30),
-                            onTap: () {
-                              print('Card tapped.');
-                            },
                             child: Container(
                               child: Text(
                                 'To scan for hotspots, first press the black button on the left side of your hotspot, wait for the hotspot LED to turn blue, then press the magnifying glass button in the bottom right of the app to scan.',
@@ -126,29 +123,51 @@ class _FindDevicesScreenState extends State<FindDevicesScreen> {
                 stream: FlutterBlue.instance.scanResults,
                 initialData: [],
                 builder: (c, snapshot) => Column(
-                  children: snapshot.data
-                      .map(
-                        (r) => ScanResultTile(
-                          result: r,
-                          onTap: () => Navigator.of(context)
-                              .push(MaterialPageRoute(builder: (context) {
-                            r.device.state.listen((connectionState) {
-                              print("connectionState Hotspots Screen: " +
-                                  connectionState.toString());
-                              if (connectionState ==
-                                  BluetoothDeviceState.disconnected) {
-                                r.device.connect();
-                              }
-                            }, onDone: () {
-                              print("Connection State Check Complete");
-                            }, onError: (error) {
-                              print("Connection Error: " + error);
-                            });
-                            return HotspotScreen(device: r.device);
-                          })),
-                        ),
-                      )
-                      .toList(),
+                  children: snapshot.data.isEmpty == true && scanned
+                      ? [
+                          Card(
+                            color: Colors.white,
+                            margin: EdgeInsets.all(20),
+                            elevation: 5.0,
+                            child: InkWell(
+                              splashColor: Colors.blue.withAlpha(30),
+                              child: Container(
+                                margin: EdgeInsets.all(20),
+                                child: Text(
+                                  'No Hotspots Found',
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .headline
+                                      .copyWith(color: Colors.grey),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ]
+                      : snapshot.data
+                          .map(
+                            (r) => ScanResultTile(
+                              result: r,
+                              onTap: () => Navigator.of(context)
+                                  .push(MaterialPageRoute(builder: (context) {
+                                r.device.state.listen((connectionState) {
+                                  print("connectionState Hotspots Screen: " +
+                                      connectionState.toString());
+                                  if (connectionState ==
+                                      BluetoothDeviceState.disconnected) {
+                                    r.device.connect();
+                                  }
+                                }, onDone: () {
+                                  print("Connection State Check Complete");
+                                }, onError: (error) {
+                                  print("Connection Error: " + error);
+                                });
+                                return HotspotScreen(device: r.device);
+                              })),
+                            ),
+                          )
+                          .toList(),
                 ),
               ),
             ],
@@ -170,6 +189,7 @@ class _FindDevicesScreenState extends State<FindDevicesScreen> {
                 child: Icon(Icons.search),
                 onPressed: () {
                   showTipCardStreamController.add(false);
+                  scanned = true;
                   FlutterBlue.instance.startScan(
                       timeout: Duration(seconds: 3),
                       withServices: scanFilterServiceUuids);
