@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
+import 'package:flutter_icons/flutter_icons.dart';
 
 class ScanResultTile extends StatelessWidget {
   const ScanResultTile({Key key, this.result, this.onTap}) : super(key: key);
@@ -81,7 +82,15 @@ class ScanResultTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return ExpansionTile(
       title: _buildTitle(context),
-      leading: Text(result.rssi.toString()),
+      leading: (() {
+        if (result.rssi <= -100) {
+          return Icon(MaterialCommunityIcons.signal_cellular_1);
+        } else if (result.rssi > -100 && result.rssi <= -70) {
+          return Icon(MaterialCommunityIcons.signal_cellular_2);
+        } else {
+          return Icon(MaterialCommunityIcons.signal_cellular_3);
+        }
+      }()),
       trailing: RaisedButton(
         child: Text('CONNECT'),
         color: Colors.black,
@@ -97,7 +106,7 @@ class ScanResultTile extends StatelessWidget {
             context,
             'Manufacturer Data',
             getNiceManufacturerData(
-                result.advertisementData.manufacturerData) ??
+                    result.advertisementData.manufacturerData) ??
                 'N/A'),
         _buildAdvRow(
             context,
@@ -141,7 +150,7 @@ class ServiceTile extends StatelessWidget {
       return ListTile(
         title: Text('Service'),
         subtitle:
-        Text('0x${service.uuid.toString().toUpperCase().substring(4, 8)}'),
+            Text('0x${service.uuid.toString().toUpperCase().substring(4, 8)}'),
       );
     }
   }
@@ -156,11 +165,11 @@ class CharacteristicTile extends StatelessWidget {
 
   const CharacteristicTile(
       {Key key,
-        this.characteristic,
-        this.descriptorTiles,
-        this.onReadPressed,
-        this.onWritePressed,
-        this.onNotificationPressed})
+      this.characteristic,
+      this.descriptorTiles,
+      this.onReadPressed,
+      this.onWritePressed,
+      this.onNotificationPressed})
       : super(key: key);
 
   @override
