@@ -12,7 +12,7 @@ class MoreScreen extends StatelessWidget {
         ),
         body: ListView(
           children: ListTile.divideTiles(context: context, tiles: [
-            ListTile(title: Text('Version'), trailing: Text("0.1.0")),
+            ListTile(title: Text('Version'), trailing: Text("0.1.2")),
             ListTile(
               title: Text('Source Code - Git Hub'),
               onTap: () {
