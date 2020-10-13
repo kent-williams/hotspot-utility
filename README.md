@@ -20,3 +20,6 @@ Unofficial Helium Hotspot Utility Mobile App for iOS and Android built with Flut
 * cd protos
 * run `protoc --dart_out=..\lib\gen .\hotspotutility.proto`
 * run `protoc --objc_out=..\ios\gen .\hotspotutility.proto`
+
+## Firebase Libraries
+There are Firebase services used on the published app, if you do not require the firebase libraries you can simply remove them. 
