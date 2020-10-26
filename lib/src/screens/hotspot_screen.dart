@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:hotspotutility/src/screens/wifi_available_ssid_screen.dart';
+import 'package:hotspotutility/src/screens/diagnostics_screen.dart';
 import 'package:http/http.dart' as http;
 
 class HotspotScreen extends StatefulWidget {
@@ -21,6 +22,7 @@ class _HotspotScreenState extends State<HotspotScreen> {
   BluetoothCharacteristic ethernetOnlineChar;
   BluetoothCharacteristic hotspotFirmwareChar;
   BluetoothCharacteristic hotspotSerialChar;
+  BluetoothCharacteristic hotspotDiagnosticsChar;
   BluetoothCharacteristic publicKeyChar;
 
   bool wifiSsidBuilt = false;
@@ -152,12 +154,17 @@ class _HotspotScreenState extends State<HotspotScreen> {
                 (c) =>
                     c.uuid.toString() == "00002a25-0000-1000-8000-00805f9b34fb",
                 orElse: () => null);
+        hotspotDiagnosticsChar = hotspotService.characteristics
+            .singleWhere(
+                (c) =>
+                    c.uuid.toString() == "b833d34f-d871-422c-bf9e-8e6ec117d57e",
+                orElse: () => null);
         publicKeyChar = hotspotService.characteristics.singleWhere(
             (c) => c.uuid.toString() == "0a852c59-50d3-4492-bfd3-22fe58a24f01",
             orElse: () => null);
       }
     } else {
-      print("Erro: Services is null");
+      print("Error: Services is null");
     }
   }
 
@@ -276,6 +283,31 @@ class _HotspotScreenState extends State<HotspotScreen> {
                   )
                 ]);
               }),
+          ListTile(
+            title: Text('Diagnostic Report'),
+            trailing: StreamBuilder<bool>(
+                stream: charReadStatusStreamController.stream,
+                initialData: false,
+                builder: (c, snapshot) {
+                  if (snapshot.data == true) {
+                    return RaisedButton(
+                      child: Text('RUN'),
+                      color: Colors.black,
+                      textColor: Colors.white,
+                      onPressed: () {
+                        Navigator.of(context)
+                            .push(MaterialPageRoute(builder: (context) {
+                          return DiagnosticsScreen(
+                              device: widget.device,
+                              hotspotDiagnosticsChar: hotspotDiagnosticsChar);
+                        }));
+                      },
+                    );
+                  } else {
+                    return Icon(null);
+                  }
+                }),
+          ),
         ]),
       ),
     );

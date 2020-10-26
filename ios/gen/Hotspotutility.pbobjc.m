@@ -8,7 +8,7 @@
 #endif
 
 #if GPB_USE_PROTOBUF_FRAMEWORK_IMPORTS
- #import <protobuf/GPBProtocolBuffers_RuntimeSupport.h>
+ #import <Protobuf/GPBProtocolBuffers_RuntimeSupport.h>
 #else
  #import "GPBProtocolBuffers_RuntimeSupport.h"
 #endif
@@ -18,6 +18,13 @@
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
+#pragma clang diagnostic ignored "-Wdollar-in-identifier-extension"
+
+#pragma mark - Objective C Class declarations
+// Forward declarations of Objective C classes that we can use as
+// static values in struct initializers.
+// We don't use [Foo class] because it is not a static value.
+GPBObjCClassDeclaration(Protosdiagnostics_v1);
 
 #pragma mark - ProtosHotspotutilityRoot
 
@@ -62,7 +69,7 @@ typedef struct Protoswifi_services_v1__storage_ {
     static GPBMessageFieldDescription fields[] = {
       {
         .name = "servicesArray",
-        .dataTypeSpecific.className = NULL,
+        .dataTypeSpecific.clazz = Nil,
         .number = Protoswifi_services_v1_FieldNumber_ServicesArray,
         .hasIndex = GPBNoHasBit,
         .offset = (uint32_t)offsetof(Protoswifi_services_v1__storage_, servicesArray),
@@ -77,7 +84,7 @@ typedef struct Protoswifi_services_v1__storage_ {
                                         fields:fields
                                     fieldCount:(uint32_t)(sizeof(fields) / sizeof(GPBMessageFieldDescription))
                                    storageSize:sizeof(Protoswifi_services_v1__storage_)
-                                         flags:GPBDescriptorInitializationFlag_None];
+                                         flags:(GPBDescriptorInitializationFlags)(GPBDescriptorInitializationFlag_UsesClassRefs | GPBDescriptorInitializationFlag_Proto3OptionalKnown)];
     #if defined(DEBUG) && DEBUG
       NSAssert(descriptor == nil, @"Startup recursed!");
     #endif  // DEBUG
@@ -109,20 +116,20 @@ typedef struct Protoswifi_connect_v1__storage_ {
     static GPBMessageFieldDescription fields[] = {
       {
         .name = "service",
-        .dataTypeSpecific.className = NULL,
+        .dataTypeSpecific.clazz = Nil,
         .number = Protoswifi_connect_v1_FieldNumber_Service,
         .hasIndex = 0,
         .offset = (uint32_t)offsetof(Protoswifi_connect_v1__storage_, service),
-        .flags = GPBFieldOptional,
+        .flags = (GPBFieldFlags)(GPBFieldOptional | GPBFieldClearHasIvarOnZero),
         .dataType = GPBDataTypeString,
       },
       {
         .name = "password",
-        .dataTypeSpecific.className = NULL,
+        .dataTypeSpecific.clazz = Nil,
         .number = Protoswifi_connect_v1_FieldNumber_Password,
         .hasIndex = 1,
         .offset = (uint32_t)offsetof(Protoswifi_connect_v1__storage_, password),
-        .flags = GPBFieldOptional,
+        .flags = (GPBFieldFlags)(GPBFieldOptional | GPBFieldClearHasIvarOnZero),
         .dataType = GPBDataTypeString,
       },
     };
@@ -133,7 +140,7 @@ typedef struct Protoswifi_connect_v1__storage_ {
                                         fields:fields
                                     fieldCount:(uint32_t)(sizeof(fields) / sizeof(GPBMessageFieldDescription))
                                    storageSize:sizeof(Protoswifi_connect_v1__storage_)
-                                         flags:GPBDescriptorInitializationFlag_None];
+                                         flags:(GPBDescriptorInitializationFlags)(GPBDescriptorInitializationFlag_UsesClassRefs | GPBDescriptorInitializationFlag_Proto3OptionalKnown)];
     #if defined(DEBUG) && DEBUG
       NSAssert(descriptor == nil, @"Startup recursed!");
     #endif  // DEBUG
@@ -163,11 +170,11 @@ typedef struct Protoswifi_remove_v1__storage_ {
     static GPBMessageFieldDescription fields[] = {
       {
         .name = "service",
-        .dataTypeSpecific.className = NULL,
+        .dataTypeSpecific.clazz = Nil,
         .number = Protoswifi_remove_v1_FieldNumber_Service,
         .hasIndex = 0,
         .offset = (uint32_t)offsetof(Protoswifi_remove_v1__storage_, service),
-        .flags = GPBFieldOptional,
+        .flags = (GPBFieldFlags)(GPBFieldOptional | GPBFieldClearHasIvarOnZero),
         .dataType = GPBDataTypeString,
       },
     };
@@ -178,7 +185,52 @@ typedef struct Protoswifi_remove_v1__storage_ {
                                         fields:fields
                                     fieldCount:(uint32_t)(sizeof(fields) / sizeof(GPBMessageFieldDescription))
                                    storageSize:sizeof(Protoswifi_remove_v1__storage_)
-                                         flags:GPBDescriptorInitializationFlag_None];
+                                         flags:(GPBDescriptorInitializationFlags)(GPBDescriptorInitializationFlag_UsesClassRefs | GPBDescriptorInitializationFlag_Proto3OptionalKnown)];
+    #if defined(DEBUG) && DEBUG
+      NSAssert(descriptor == nil, @"Startup recursed!");
+    #endif  // DEBUG
+    descriptor = localDescriptor;
+  }
+  return descriptor;
+}
+
+@end
+
+#pragma mark - Protosdiagnostics_v1
+
+@implementation Protosdiagnostics_v1
+
+@dynamic diagnostics, diagnostics_Count;
+
+typedef struct Protosdiagnostics_v1__storage_ {
+  uint32_t _has_storage_[1];
+  NSMutableDictionary *diagnostics;
+} Protosdiagnostics_v1__storage_;
+
+// This method is threadsafe because it is initially called
+// in +initialize for each subclass.
++ (GPBDescriptor *)descriptor {
+  static GPBDescriptor *descriptor = nil;
+  if (!descriptor) {
+    static GPBMessageFieldDescription fields[] = {
+      {
+        .name = "diagnostics",
+        .dataTypeSpecific.clazz = Nil,
+        .number = Protosdiagnostics_v1_FieldNumber_Diagnostics,
+        .hasIndex = GPBNoHasBit,
+        .offset = (uint32_t)offsetof(Protosdiagnostics_v1__storage_, diagnostics),
+        .flags = GPBFieldMapKeyString,
+        .dataType = GPBDataTypeString,
+      },
+    };
+    GPBDescriptor *localDescriptor =
+        [GPBDescriptor allocDescriptorForClass:[Protosdiagnostics_v1 class]
+                                     rootClass:[ProtosHotspotutilityRoot class]
+                                          file:ProtosHotspotutilityRoot_FileDescriptor()
+                                        fields:fields
+                                    fieldCount:(uint32_t)(sizeof(fields) / sizeof(GPBMessageFieldDescription))
+                                   storageSize:sizeof(Protosdiagnostics_v1__storage_)
+                                         flags:(GPBDescriptorInitializationFlags)(GPBDescriptorInitializationFlag_UsesClassRefs | GPBDescriptorInitializationFlag_Proto3OptionalKnown)];
     #if defined(DEBUG) && DEBUG
       NSAssert(descriptor == nil, @"Startup recursed!");
     #endif  // DEBUG
