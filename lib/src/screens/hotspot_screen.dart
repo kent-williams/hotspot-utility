@@ -28,6 +28,7 @@ class _HotspotScreenState extends State<HotspotScreen> {
   bool wifiSsidBuilt = false;
   bool foundChars = true;
   String wifiSsidResult = 'None';
+  String hotspotName = 'None';
   String publicKeyResult = 'None';
 
   StreamController<String> hotspotNameStreamController =
@@ -78,6 +79,7 @@ class _HotspotScreenState extends State<HotspotScreen> {
                 .then((value) {
               var parsed = json.decode(value.body);
               hotspotNameStreamController.add(parsed['data']['name']);
+              hotspotName = parsed['data']['name'];
             }).catchError((e) {
               print("Helium API Error");
             });
@@ -299,7 +301,9 @@ class _HotspotScreenState extends State<HotspotScreen> {
                             .push(MaterialPageRoute(builder: (context) {
                           return DiagnosticsScreen(
                               device: widget.device,
-                              hotspotDiagnosticsChar: hotspotDiagnosticsChar);
+                              hotspotDiagnosticsChar: hotspotDiagnosticsChar,
+                              hotspotName: hotspotName,
+                              hotspotPublicKey: publicKeyResult);
                         }));
                       },
                     );
