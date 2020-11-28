@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
+import 'package:share/share.dart';
+import 'package:pretty_json/pretty_json.dart';
 import 'package:http/http.dart' as http;
 import 'package:hotspotutility/gen/hotspotutility.pb.dart' as protos;
 
@@ -34,13 +36,14 @@ class _DiagnosticsScreenState extends State<DiagnosticsScreen> {
       StreamController<String>();
   StreamController<String> lastChallengeStreamController =
       StreamController<String>();
-  StreamController<bool> dataRequestCompleteStreamController =
-      StreamController<bool>.broadcast();
   StreamController<String> blockchainHeightStreamController =
       StreamController<String>();
+  StreamController<bool> dataRequestCompleteStreamController =
+      StreamController<bool>.broadcast();
 
   Map<String, String> diagnosticsResults;
   int blockchainHeight;
+  Map<String, String> shareData = new Map();
 
   @override
   void dispose() {
@@ -50,12 +53,10 @@ class _DiagnosticsScreenState extends State<DiagnosticsScreen> {
     fwStreamController.close();
     ipStreamController.close();
     natTypeStreamController.close();
-
     outboundConnectionStreamController.close();
     inboundConnectionStreamController.close();
     lastChallengeStreamController.close();
     blockchainHeightStreamController.close();
-
     dataRequestCompleteStreamController.close();
   }
 
@@ -70,18 +71,16 @@ class _DiagnosticsScreenState extends State<DiagnosticsScreen> {
       var parsed = json.decode(value.body);
       print(parsed);
       if (parsed['data'].length != 0) {
-        lastChallengeStreamController.add(
-            new DateTime.fromMillisecondsSinceEpoch(
-                    parsed['data'][0]['time'] * 1000)
-                .toString());
-        var timeDiff = new DateTime.now().millisecondsSinceEpoch -
+        var difMilli = new DateTime.now().millisecondsSinceEpoch -
             parsed['data'][0]['time'] * 1000;
-        print(new DateTime.fromMillisecondsSinceEpoch(
-            parsed['data'][0]['time'] * 1000));
-        // if data list is empty check if cursor exist
-        // if cursor exist then request another page
-        // if data is not empty then use last time
-        // if data list and cursor are empty then stop
+        var result = new DateTime.fromMillisecondsSinceEpoch(
+            parsed['data'][0]['time'] * 1000)
+            .toString().split('.')[0] +
+            '  |  ' +
+            new Duration(milliseconds: difMilli).toString().split('.')[0] +
+            ' ago';
+        lastChallengeStreamController.add(result);
+        shareData['Last Challenged'] = result;
       } else {
         print("DATA LIST EMPTY TRYING AGAIN");
         return http
@@ -95,10 +94,16 @@ class _DiagnosticsScreenState extends State<DiagnosticsScreen> {
           var parsed = json.decode(value.body);
           print(parsed);
           if (parsed['data'].length != 0) {
-            lastChallengeStreamController.add(
-                new DateTime.fromMillisecondsSinceEpoch(
-                    parsed['data'][0]['time'] * 1000)
-                    .toString());
+            var difMilli = new DateTime.now().millisecondsSinceEpoch -
+                parsed['data'][0]['time'] * 1000;
+            var result = new DateTime.fromMillisecondsSinceEpoch(
+                parsed['data'][0]['time'] * 1000)
+                .toString().split('.')[0] +
+                '  |  ' +
+                new Duration(milliseconds: difMilli).toString().split('.')[0] +
+                ' ago';
+            lastChallengeStreamController.add(result);
+            shareData['Last Challenged'] = result;
           }
         });
       }
@@ -110,6 +115,12 @@ class _DiagnosticsScreenState extends State<DiagnosticsScreen> {
   void initState() {
     super.initState();
 
+    // Hide share button to start
+    dataRequestCompleteStreamController.add(false);
+
+    shareData['Hotspot'] = widget.hotspotName;
+
+    // Read Diagnostics Char
     widget.hotspotDiagnosticsChar.read().then((value) {
       if (new String.fromCharCodes(value) != "failed") {
         diagnosticsResults =
@@ -120,12 +131,9 @@ class _DiagnosticsScreenState extends State<DiagnosticsScreen> {
       http.get("https://api.helium.io/v1/blocks/height").then((value) {
         var parsed = json.decode(value.body);
         print(parsed['data']['height']);
-        blockchainHeightStreamController
-            .add(parsed['data']['height'].toString());
         blockchainHeight = parsed['data']['height'];
 
         getLastChallenge().then((value) {
-
           // Add data to streams
           print(diagnosticsResults);
           diagnosticsResults.forEach((key, value) {
@@ -135,49 +143,66 @@ class _DiagnosticsScreenState extends State<DiagnosticsScreen> {
                     ((int.parse(value) / blockchainHeight).toInt() * 100)
                             .toString() +
                         '%');
+                shareData['Blockchain Height'] = value +
+                    ' sync: ' +
+                    ((int.parse(value) / blockchainHeight).toInt() * 100)
+                        .toString() +
+                    '%';
                 break;
               case 'eth':
                 ethMacStreamController.add(value);
+                shareData['Ethernet MAC'] = value;
                 break;
               case 'wifi':
                 wifiMacStreamController.add(value);
+                shareData['Wi-Fi MAC'] = value;
                 break;
               case 'fw':
                 fwStreamController.add(value);
+                shareData['Firmware Version'] = value;
                 break;
               case 'ip':
                 ipStreamController.add(value);
+                shareData['IP'] = value;
                 break;
               case 'nat_type':
                 natTypeStreamController.add(value);
+                shareData['NAT Type'] = value;
                 break;
               case 'connected':
-                if (value == 'yes')
+                if (value == 'yes') {
                   outboundConnectionStreamController.add('OK');
-                else
+                  shareData['Outbound Connection'] = 'OK';
+                } else {
                   outboundConnectionStreamController.add('No Connection');
+                  shareData['Outbound Connection'] = 'No Connection';
+                }
                 break;
               case 'dialable':
-                if (value == 'yes')
+                if (value == 'yes') {
                   inboundConnectionStreamController.add('OK');
-                else
+                  shareData['Inbound Connection'] = 'OK';
+                } else {
                   inboundConnectionStreamController.add('No Connection');
+                  shareData['Inbound Connection'] = 'No Connection';
+                }
                 break;
               default:
                 print("no key match");
                 break;
             }
           });
+
+          shareData['Report Generated'] = new DateTime.now().toString().split('.')[0];
+
           dataRequestCompleteStreamController.add(true);
+        }).catchError((e) {
+          print(
+              "Helium Blockchain Hotspot Challenges API Error: ${e.toString()}");
         });
-        //     .catchError((e) {
-        //   print(
-        //       "Helium Blockchain Hotspot Challenges API Error: ${e.toString()}");
-        // });
+      }).catchError((e) {
+        print("Helium Blockchain Height API Error");
       });
-      // .catchError((e) {
-      //   print("Helium Blockchain Height API Error");
-      // });
     }).catchError((e) {
       print("Error: hotspotDiagnosticsChar Read Failure: ${e.toString()}");
     });
@@ -202,83 +227,39 @@ class _DiagnosticsScreenState extends State<DiagnosticsScreen> {
             ],
           ),
           actions: <Widget>[
-            IconButton(
-                icon: Icon(Icons.share),
-                onPressed: () {
-                  //Share.share('check out my website https://example.com');
+            StreamBuilder<bool>(
+                stream: dataRequestCompleteStreamController.stream,
+                initialData: false,
+                builder: (c, snapshot) {
+                  if (snapshot.data == false) {
+                    return new Container(
+                        width: 50.0, height: 5.0, padding: const EdgeInsets.only(top: 5, bottom: 5),
+                        child: CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation(Colors.black),
+                    ));
+                  } else {
+                    return Icon(null);
+                  }
                 }),
+            StreamBuilder<bool>(
+                stream: dataRequestCompleteStreamController.stream,
+                initialData: false,
+                builder: (c, snapshot) {
+                  if (snapshot.data == true) {
+                    return IconButton(
+                        icon: Icon(Icons.share),
+                        onPressed: () {
+                          Share.share(
+                              prettyJson(shareData, indent: 2));
+                        });
+                  } else {
+                    return Icon(null);
+                  }
+                })
           ],
         ),
         body: SingleChildScrollView(
             child: Column(children: <Widget>[
-          // StreamBuilder<Map<String, String>>(
-          //     stream: hotspotDiagnosticsStreamController.stream,
-          //     builder: (c, snapshot) {
-          //       if (snapshot.data != null) {
-          //         return new ListView.builder(
-          //           itemCount: snapshot.data.length,
-          //           itemBuilder: (BuildContext context, int index) {
-          //             switch (snapshot.data.keys.elementAt(index)) {
-          //               case 'eth':
-          //                 String key = snapshot.data.keys.elementAt(index);
-          //                 return new Column(
-          //                   children: <Widget>[
-          //                     new ListTile(
-          //                       title: new Text("$key"),
-          //                       subtitle: new Text("${snapshot.data[key]}"),
-          //                     ),
-          //                     new Divider(
-          //                       height: 2.0,
-          //                     ),
-          //                   ],
-          //                 );
-          //               case 'height':
-          //                 String key = snapshot.data.keys.elementAt(index);
-          //                 return new Column(
-          //                   children: <Widget>[
-          //                     new ListTile(
-          //                       title: new Text("$key"),
-          //                       subtitle: new Text(
-          //                           "${(int.parse(snapshot.data[key]) / blockchainHeight)}"),
-          //                     ),
-          //                     new Divider(
-          //                       height: 2.0,
-          //                     ),
-          //                   ],
-          //                 );
-          //               default:
-          //                 return new Column();
-          //             }
-          //           },
-          //         );
-          //       } else
-          //         return Container();
-          //       // return ListView.builder(
-          //       //   physics: NeverScrollableScrollPhysics(),
-          //       //   scrollDirection: Axis.vertical,
-          //       //   shrinkWrap: true,
-          //       //   itemCount: snapshot.data.length,
-          //       //   itemBuilder: (context, index) {
-          //       //     return ListTile(
-          //       //       title: Text(snapshot.data[index].toString()),
-          //       //       leading: snapshot.data[index].toString() == 'something'
-          //       //           ? Icon(
-          //       //               Icons.check_circle,
-          //       //               color: Colors.grey,
-          //       //               size: 24.0,
-          //       //               semanticLabel: 'Connected to Network',
-          //       //             )
-          //       //           : Icon(
-          //       //               Icons.wifi_lock,
-          //       //               color: Colors.grey,
-          //       //               size: 24.0,
-          //       //               semanticLabel: 'Available Network',
-          //       //             ),
-          //       //       trailing: Icon(Icons.keyboard_arrow_right),
-          //       //     );
-          //       //   },
-          //       // );
-          //     }),
           StreamBuilder<String>(
               stream: outboundConnectionStreamController.stream,
               initialData: '',
