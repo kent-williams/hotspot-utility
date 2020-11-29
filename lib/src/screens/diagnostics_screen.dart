@@ -237,7 +237,7 @@ class _DiagnosticsScreenState extends State<DiagnosticsScreen> {
                     return new Container(
                         width: 50.0,
                         height: 5.0,
-                        padding: const EdgeInsets.only(top: 5, bottom: 5),
+                        padding: const EdgeInsets.only(top: 10, bottom: 10, right: 10),
                         child: CircularProgressIndicator(
                           valueColor: AlwaysStoppedAnimation(Colors.black),
                         ));
