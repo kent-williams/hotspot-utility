@@ -353,14 +353,7 @@ class _DiagnosticsScreenState extends State<DiagnosticsScreen> {
               initialData: false,
               builder: (c, snapshot) {
                 if (snapshot.data == true) {
-                  return
-                      // IconButton(
-                      //   icon: Icon(Icons.share),
-                      //   onPressed: () {
-                      //     Share.share(prettyJson(shareData, indent: 2));
-                      //   });
-
-                      RaisedButton(
+                  return RaisedButton(
                     child: Text('SHARE'),
                     color: Colors.black,
                     textColor: Colors.white,
