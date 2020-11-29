@@ -69,7 +69,6 @@ class _DiagnosticsScreenState extends State<DiagnosticsScreen> {
     )
         .then((value) {
       var parsed = json.decode(value.body);
-      print(parsed);
       if (parsed['data'].length != 0) {
         var difMilli = new DateTime.now().millisecondsSinceEpoch -
             parsed['data'][0]['time'] * 1000;
@@ -83,7 +82,7 @@ class _DiagnosticsScreenState extends State<DiagnosticsScreen> {
         lastChallengeStreamController.add(result);
         shareData['Last Challenged'] = result;
       } else {
-        print("DATA LIST EMPTY TRYING AGAIN");
+        print("Using Cursor");
         return http
             .get(
           "https://api.helium.io/v1/hotspots/" +
@@ -93,7 +92,6 @@ class _DiagnosticsScreenState extends State<DiagnosticsScreen> {
         )
             .then((value) {
           var parsed = json.decode(value.body);
-          print(parsed);
           if (parsed['data'].length != 0) {
             var difMilli = new DateTime.now().millisecondsSinceEpoch -
                 parsed['data'][0]['time'] * 1000;
@@ -132,75 +130,76 @@ class _DiagnosticsScreenState extends State<DiagnosticsScreen> {
       // blockchain height http
       http.get("https://api.helium.io/v1/blocks/height").then((value) {
         var parsed = json.decode(value.body);
-        print(parsed['data']['height']);
         blockchainHeight = parsed['data']['height'];
 
+        // Add data to streams
+        diagnosticsResults.forEach((key, value) {
+          switch (key) {
+            case 'height':
+              var heightString = value +
+                  ' sync: ' +
+                  ((double.parse(value) / blockchainHeight) * 100)
+                      .round()
+                      .toString() +
+                  '%';
+              blockchainHeightStreamController.add(heightString);
+              shareData['Blockchain Height'] = heightString;
+              break;
+            case 'eth':
+              ethMacStreamController.add(value);
+              shareData['Ethernet MAC'] = value;
+              break;
+            case 'wifi':
+              wifiMacStreamController.add(value);
+              shareData['Wi-Fi MAC'] = value;
+              break;
+            case 'fw':
+              fwStreamController.add(value);
+              shareData['Firmware Version'] = value;
+              break;
+            case 'ip':
+              ipStreamController.add(value);
+              shareData['IP'] = value;
+              break;
+            case 'nat_type':
+              natTypeStreamController.add(value);
+              shareData['NAT Type'] = value;
+              break;
+            case 'connected':
+              if (value == 'yes') {
+                outboundConnectionStreamController.add('OK');
+                shareData['Outbound Connection'] = 'OK';
+              } else {
+                outboundConnectionStreamController.add('No Connection');
+                shareData['Outbound Connection'] = 'No Connection';
+              }
+              break;
+            case 'dialable':
+              if (value == 'yes') {
+                inboundConnectionStreamController.add('OK');
+                shareData['Inbound Connection'] = 'OK';
+              } else {
+                inboundConnectionStreamController.add('No Connection');
+                shareData['Inbound Connection'] = 'No Connection';
+              }
+              break;
+            default:
+              print("no key match");
+              break;
+          }
+        });
+
+        shareData['Report Generated'] =
+            new DateTime.now().toString().split('.')[0];
+
         getLastChallenge().then((value) {
-          // Add data to streams
-          print(diagnosticsResults);
-          diagnosticsResults.forEach((key, value) {
-            switch (key) {
-              case 'height':
-                var heightString = value +
-                    ' sync: ' +
-                    ((double.parse(value) / blockchainHeight) * 100)
-                        .round()
-                        .toString() +
-                    '%';
-                blockchainHeightStreamController.add(heightString);
-                shareData['Blockchain Height'] = heightString;
-                break;
-              case 'eth':
-                ethMacStreamController.add(value);
-                shareData['Ethernet MAC'] = value;
-                break;
-              case 'wifi':
-                wifiMacStreamController.add(value);
-                shareData['Wi-Fi MAC'] = value;
-                break;
-              case 'fw':
-                fwStreamController.add(value);
-                shareData['Firmware Version'] = value;
-                break;
-              case 'ip':
-                ipStreamController.add(value);
-                shareData['IP'] = value;
-                break;
-              case 'nat_type':
-                natTypeStreamController.add(value);
-                shareData['NAT Type'] = value;
-                break;
-              case 'connected':
-                if (value == 'yes') {
-                  outboundConnectionStreamController.add('OK');
-                  shareData['Outbound Connection'] = 'OK';
-                } else {
-                  outboundConnectionStreamController.add('No Connection');
-                  shareData['Outbound Connection'] = 'No Connection';
-                }
-                break;
-              case 'dialable':
-                if (value == 'yes') {
-                  inboundConnectionStreamController.add('OK');
-                  shareData['Inbound Connection'] = 'OK';
-                } else {
-                  inboundConnectionStreamController.add('No Connection');
-                  shareData['Inbound Connection'] = 'No Connection';
-                }
-                break;
-              default:
-                print("no key match");
-                break;
-            }
-          });
-
-          shareData['Report Generated'] =
-              new DateTime.now().toString().split('.')[0];
-
           dataRequestCompleteStreamController.add(true);
         }).catchError((e) {
           print(
               "Helium Blockchain Hotspot Challenges API Error: ${e.toString()}");
+          lastChallengeStreamController.add('No Challenge Found');
+          shareData['Last Challenged'] = 'No Challenge Found';
+          dataRequestCompleteStreamController.add(true);
         });
       }).catchError((e) {
         print("Helium Blockchain Height API Error");
@@ -237,7 +236,8 @@ class _DiagnosticsScreenState extends State<DiagnosticsScreen> {
                     return new Container(
                         width: 50.0,
                         height: 5.0,
-                        padding: const EdgeInsets.only(top: 10, bottom: 10, right: 10),
+                        padding: const EdgeInsets.only(
+                            top: 10, bottom: 10, right: 10),
                         child: CircularProgressIndicator(
                           valueColor: AlwaysStoppedAnimation(Colors.black),
                         ));
