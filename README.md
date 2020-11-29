@@ -2,6 +2,9 @@
 
 Unofficial Helium Hotspot Utility Mobile App for iOS and Android built with Flutter
 
+[iOS - App Store](https://apps.apple.com/us/app/helium-hotspot-utility/id1527367455)  
+[Android - Play Store](https://play.google.com/store/apps/details?id=com.kentwilliams.hotspotutility)
+
 ## Development Environment
 
 [Flutter Getting Started](https://flutter.dev/docs/get-started/install)
@@ -17,3 +20,6 @@ Unofficial Helium Hotspot Utility Mobile App for iOS and Android built with Flut
 * cd protos
 * run `protoc --dart_out=..\lib\gen .\hotspotutility.proto`
 * run `protoc --objc_out=..\ios\gen .\hotspotutility.proto`
+
+## Firebase Libraries
+There are Firebase services used on the published app, if you do not require the firebase libraries you can simply remove them. 
