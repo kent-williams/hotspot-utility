@@ -11,7 +11,7 @@ description: Helium Hotspot Utility Mobile App
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 0.1.2+1
+version: 0.1.2+3
 
 environment:
   sdk: ">=2.1.0 <3.0.0"
@@ -26,6 +26,8 @@ dependencies:
   firebase_analytics: ^5.0.2
   http: ^0.12.1
   flutter_icons: ^1.1.0
+  share: ^0.6.5+4
+  pretty_json: ^1.1.0
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.

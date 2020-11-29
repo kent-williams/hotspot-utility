@@ -16,3 +16,7 @@ message wifi_connect_v1 {
 message wifi_remove_v1 {
     string service = 1;
 }
+
+message diagnostics_v1 {
+    map<string, string>diagnostics = 1;
+}

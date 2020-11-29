@@ -106,3 +106,28 @@ class wifi_remove_v1 extends $pb.GeneratedMessage {
   void clearService() => clearField(1);
 }
 
+class diagnostics_v1 extends $pb.GeneratedMessage {
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo('diagnostics_v1', createEmptyInstance: create)
+    ..m<$core.String, $core.String>(1, 'diagnostics', entryClassName: 'diagnostics_v1.DiagnosticsEntry', keyFieldType: $pb.PbFieldType.OS, valueFieldType: $pb.PbFieldType.OS)
+    ..hasRequiredFields = false
+  ;
+
+  diagnostics_v1._() : super();
+  factory diagnostics_v1() => create();
+  factory diagnostics_v1.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory diagnostics_v1.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+  diagnostics_v1 clone() => diagnostics_v1()..mergeFromMessage(this);
+  diagnostics_v1 copyWith(void Function(diagnostics_v1) updates) => super.copyWith((message) => updates(message as diagnostics_v1));
+  $pb.BuilderInfo get info_ => _i;
+  @$core.pragma('dart2js:noInline')
+  static diagnostics_v1 create() => diagnostics_v1._();
+  diagnostics_v1 createEmptyInstance() => create();
+  static $pb.PbList<diagnostics_v1> createRepeated() => $pb.PbList<diagnostics_v1>();
+  @$core.pragma('dart2js:noInline')
+  static diagnostics_v1 getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<diagnostics_v1>(create);
+  static diagnostics_v1 _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.Map<$core.String, $core.String> get diagnostics => $_getMap(0);
+}
+
