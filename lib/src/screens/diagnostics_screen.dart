@@ -74,8 +74,9 @@ class _DiagnosticsScreenState extends State<DiagnosticsScreen> {
         var difMilli = new DateTime.now().millisecondsSinceEpoch -
             parsed['data'][0]['time'] * 1000;
         var result = new DateTime.fromMillisecondsSinceEpoch(
-            parsed['data'][0]['time'] * 1000)
-            .toString().split('.')[0] +
+                    parsed['data'][0]['time'] * 1000)
+                .toString()
+                .split('.')[0] +
             '  |  ' +
             new Duration(milliseconds: difMilli).toString().split('.')[0] +
             ' ago';
@@ -97,8 +98,9 @@ class _DiagnosticsScreenState extends State<DiagnosticsScreen> {
             var difMilli = new DateTime.now().millisecondsSinceEpoch -
                 parsed['data'][0]['time'] * 1000;
             var result = new DateTime.fromMillisecondsSinceEpoch(
-                parsed['data'][0]['time'] * 1000)
-                .toString().split('.')[0] +
+                        parsed['data'][0]['time'] * 1000)
+                    .toString()
+                    .split('.')[0] +
                 '  |  ' +
                 new Duration(milliseconds: difMilli).toString().split('.')[0] +
                 ' ago';
@@ -139,15 +141,13 @@ class _DiagnosticsScreenState extends State<DiagnosticsScreen> {
           diagnosticsResults.forEach((key, value) {
             switch (key) {
               case 'height':
-                blockchainHeightStreamController.add(
-                    ((int.parse(value) / blockchainHeight).toInt() * 100)
-                            .toString() +
-                        '%');
-                shareData['Blockchain Height'] = value +
+                var heightString = value +
                     ' sync: ' +
-                    ((int.parse(value) / blockchainHeight).toInt() * 100)
+                    ((double.parse(value) / blockchainHeight) * 100).round()
                         .toString() +
                     '%';
+                blockchainHeightStreamController.add(heightString);
+                shareData['Blockchain Height'] = heightString;
                 break;
               case 'eth':
                 ethMacStreamController.add(value);
@@ -193,7 +193,8 @@ class _DiagnosticsScreenState extends State<DiagnosticsScreen> {
             }
           });
 
-          shareData['Report Generated'] = new DateTime.now().toString().split('.')[0];
+          shareData['Report Generated'] =
+              new DateTime.now().toString().split('.')[0];
 
           dataRequestCompleteStreamController.add(true);
         }).catchError((e) {
@@ -233,10 +234,12 @@ class _DiagnosticsScreenState extends State<DiagnosticsScreen> {
                 builder: (c, snapshot) {
                   if (snapshot.data == false) {
                     return new Container(
-                        width: 50.0, height: 5.0, padding: const EdgeInsets.only(top: 5, bottom: 5),
+                        width: 50.0,
+                        height: 5.0,
+                        padding: const EdgeInsets.only(top: 5, bottom: 5),
                         child: CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation(Colors.black),
-                    ));
+                          valueColor: AlwaysStoppedAnimation(Colors.black),
+                        ));
                   } else {
                     return Icon(null);
                   }
@@ -249,8 +252,7 @@ class _DiagnosticsScreenState extends State<DiagnosticsScreen> {
                     return IconButton(
                         icon: Icon(Icons.share),
                         onPressed: () {
-                          Share.share(
-                              prettyJson(shareData, indent: 2));
+                          Share.share(prettyJson(shareData, indent: 2));
                         });
                   } else {
                     return Icon(null);
