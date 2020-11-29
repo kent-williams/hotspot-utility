@@ -143,7 +143,8 @@ class _DiagnosticsScreenState extends State<DiagnosticsScreen> {
               case 'height':
                 var heightString = value +
                     ' sync: ' +
-                    ((double.parse(value) / blockchainHeight) * 100).round()
+                    ((double.parse(value) / blockchainHeight) * 100)
+                        .round()
                         .toString() +
                     '%';
                 blockchainHeightStreamController.add(heightString);
@@ -244,20 +245,6 @@ class _DiagnosticsScreenState extends State<DiagnosticsScreen> {
                     return Icon(null);
                   }
                 }),
-            StreamBuilder<bool>(
-                stream: dataRequestCompleteStreamController.stream,
-                initialData: false,
-                builder: (c, snapshot) {
-                  if (snapshot.data == true) {
-                    return IconButton(
-                        icon: Icon(Icons.share),
-                        onPressed: () {
-                          Share.share(prettyJson(shareData, indent: 2));
-                        });
-                  } else {
-                    return Icon(null);
-                  }
-                })
           ],
         ),
         body: SingleChildScrollView(
@@ -361,6 +348,30 @@ class _DiagnosticsScreenState extends State<DiagnosticsScreen> {
                   )
                 ]);
               }),
+          StreamBuilder<bool>(
+              stream: dataRequestCompleteStreamController.stream,
+              initialData: false,
+              builder: (c, snapshot) {
+                if (snapshot.data == true) {
+                  return
+                      // IconButton(
+                      //   icon: Icon(Icons.share),
+                      //   onPressed: () {
+                      //     Share.share(prettyJson(shareData, indent: 2));
+                      //   });
+
+                      RaisedButton(
+                    child: Text('SHARE'),
+                    color: Colors.black,
+                    textColor: Colors.white,
+                    onPressed: () {
+                      Share.share(prettyJson(shareData, indent: 2));
+                    },
+                  );
+                } else {
+                  return Icon(null);
+                }
+              })
         ])));
   }
 }
