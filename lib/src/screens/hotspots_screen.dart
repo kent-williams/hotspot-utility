@@ -103,14 +103,64 @@ class _FindDevicesScreenState extends State<FindDevicesScreen> {
                           child: InkWell(
                             splashColor: Colors.blue.withAlpha(30),
                             child: Container(
-                              child: Text(
-                                'To scan for hotspots, first press the black button on the left side of your hotspot, wait for the hotspot LED to turn blue, then press the magnifying glass button in the bottom right of the app to scan.',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .headline
-                                    .copyWith(color: Colors.grey),
-                                textAlign: TextAlign.center,
+                              child: RichText(
+                                text: TextSpan(
+                                  text: '',
+                                  style: DefaultTextStyle.of(context).style,
+                                  children: <TextSpan>[
+                                    TextSpan(
+                                        text: 'Instructions: \n\n',
+                                        style: TextStyle(fontSize: 20)),
+                                    TextSpan(
+                                        text:
+                                            'Step 1. Activate Hotspot Advertising\n',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 18)),
+                                    TextSpan(
+                                        text:
+                                            'Follow steps for your Hotspot type.\n',
+                                        style: TextStyle(fontSize: 16)),
+                                    TextSpan(
+                                        text: 'Helium Hotspot: ',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16)),
+                                    TextSpan(
+                                        text:
+                                            'Press the black button on the left side of your hotspot, wait for the hotspot LED to turn blue.\n',
+                                        style: TextStyle(fontSize: 16)),
+                                    TextSpan(
+                                        text: 'RAK Hotspot: ',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16)),
+                                    TextSpan(
+                                        text:
+                                            'Power cycle your hotspot, wait 1 minute.\n',
+                                        style: TextStyle(fontSize: 16)),
+                                    TextSpan(
+                                        text: '\nStep 2. Scan for Hotspot\n',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 18)),
+                                    TextSpan(
+                                        text:
+                                            'Press the magnifying glass button in the bottom right to scan.',
+                                        style: TextStyle(fontSize: 16)),
+                                    TextSpan(
+                                        text:
+                                            '\n\nStep 3. Connect to Hotspot\n',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 18)),
+                                    TextSpan(
+                                        text: 'Press the CONNECT button.',
+                                        style: TextStyle(fontSize: 16)),
+                                  ],
+                                ),
                               ),
+                              padding: EdgeInsets.all(8.0),
                             ),
                           ),
                         ),
