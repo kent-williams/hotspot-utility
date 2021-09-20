@@ -69,10 +69,12 @@ class _HotspotScreenState extends State<HotspotScreen> {
     widget.device.state.listen((connectionState) {
       if (connectionState == BluetoothDeviceState.connected) {
         widget.device.discoverServices().then((services) {
+          print(services);
           _findChars(services);
           // public key
           publicKeyChar.read().then((value) {
             publicKeyResult = new String.fromCharCodes(value);
+            print(publicKeyResult);
             // hotspot info http
             http
                 .get("https://api.helium.io/v1/hotspots/" + publicKeyResult)
@@ -89,29 +91,29 @@ class _HotspotScreenState extends State<HotspotScreen> {
               // add result to stream
               wifiSsidStreamController.add(wifiSsidResult);
               // ethernet status
-              ethernetOnlineChar.read().then((value) {
-                var ethernetStatusResult = new String.fromCharCodes(value);
-                // add result to stream
-                if (ethernetStatusResult == 'true') {
-                  ethernetStatusStreamController.add('Connected');
-                } else {
-                  ethernetStatusStreamController.add('Disconnected');
-                }
+              // ethernetOnlineChar.read().then((value) {
+              //   var ethernetStatusResult = new String.fromCharCodes(value);
+              //   // add result to stream
+              //   if (ethernetStatusResult == 'true') {
+              //     ethernetStatusStreamController.add('Connected');
+              //   } else {
+              //     ethernetStatusStreamController.add('Disconnected');
+              //   }
                 // hotspot firmware version
                 hotspotFirmwareChar.read().then((value) {
                   // add result to stream
                   hotspotFirmwareStreamController
                       .add(new String.fromCharCodes(value));
                   // hotspot serial number
-                  hotspotSerialChar.read().then((value) {
+                  // hotspotSerialChar.read().then((value) {
                     // indicate last char read is done
                     charReadStatusStreamController.add(true);
-                    // add result to stream
-                    hotspotSerialStreamController
-                        .add(new String.fromCharCodes(value));
-                  });
+                  //   // add result to stream
+                  //   hotspotSerialStreamController
+                  //       .add(new String.fromCharCodes(value));
+                  // });
                 });
-              });
+              // });
             });
           });
         });
@@ -127,6 +129,8 @@ class _HotspotScreenState extends State<HotspotScreen> {
       var deviceInformationService = services.singleWhere(
           (s) => s.uuid.toString() == "0000180a-0000-1000-8000-00805f9b34fb",
           orElse: () => null);
+      print(hotspotService);
+      print(deviceInformationService);
       if (hotspotService != null) {
         wifiSsidChar = hotspotService.characteristics.singleWhere(
             (c) => c.uuid.toString() == "7731de63-bc6a-4100-8ab1-89b2356b038b",
