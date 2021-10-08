@@ -109,17 +109,17 @@ class _FindDevicesScreenState extends State<FindDevicesScreen> {
                                   style: DefaultTextStyle.of(context).style,
                                   children: <TextSpan>[
                                     TextSpan(
-                                        text: 'Instructions: \n\n',
+                                        text: 'Instructions\n\n',
                                         style: TextStyle(fontSize: 20)),
                                     TextSpan(
                                         text:
-                                            'Step 1. Activate Hotspot Advertising\n',
+                                            'Step 1. Enable Hotspot Pairing\n',
                                         style: TextStyle(
                                             fontWeight: FontWeight.bold,
                                             fontSize: 18)),
                                     TextSpan(
                                         text:
-                                            'Follow steps for your Hotspot type.\n',
+                                            'Follow steps for your hotspot type.\n\n',
                                         style: TextStyle(fontSize: 16)),
                                     TextSpan(
                                         text: 'RAK or MNTD: ',
@@ -128,7 +128,7 @@ class _FindDevicesScreenState extends State<FindDevicesScreen> {
                                             fontSize: 16)),
                                     TextSpan(
                                         text:
-                                            'Power cycle your hotspot (or press Bluetooth pairing button on back if it has one), wait 1 minute.\n',
+                                            'Power cycle your hotspot (or press Bluetooth pairing button on back if it has one), wait 1 minute.\n\n',
                                         style: TextStyle(fontSize: 16)),
                                     TextSpan(
                                         text: 'Bobcat: ',
@@ -137,7 +137,7 @@ class _FindDevicesScreenState extends State<FindDevicesScreen> {
                                             fontSize: 16)),
                                     TextSpan(
                                         text:
-                                            'When light is green, insert pin into rear Bluetooth hole until light turns blue.\n',
+                                            'When light is green, insert pin into rear Bluetooth hole until light turns blue.\n\n',
                                         style: TextStyle(fontSize: 16)),
                                     TextSpan(
                                         text: 'SenseCAP: ',
@@ -146,7 +146,7 @@ class _FindDevicesScreenState extends State<FindDevicesScreen> {
                                             fontSize: 16)),
                                     TextSpan(
                                         text:
-                                            'Hold rear button until blue light blinks slowly (15+ seconds).\n',
+                                            'Hold rear button until blue light blinks slowly (15+ seconds).\n\n',
                                         style: TextStyle(fontSize: 16)),
                                     TextSpan(
                                         text: 'Helium (Original): ',
@@ -155,7 +155,7 @@ class _FindDevicesScreenState extends State<FindDevicesScreen> {
                                             fontSize: 16)),
                                     TextSpan(
                                         text:
-                                            'Press black button on the left side of your hotspot, wait for hotspot LED to turn blue.\n',
+                                            'Press black button on the left side of your hotspot, wait for hotspot LED to turn blue.\n\n',
                                         style: TextStyle(fontSize: 16)),
                                     TextSpan(
                                         text: '\nStep 2. Scan for Hotspot\n',
