@@ -122,22 +122,40 @@ class _FindDevicesScreenState extends State<FindDevicesScreen> {
                                             'Follow steps for your Hotspot type.\n',
                                         style: TextStyle(fontSize: 16)),
                                     TextSpan(
-                                        text: 'Helium Hotspot: ',
+                                        text: 'RAK or MNTD: ',
                                         style: TextStyle(
                                             fontWeight: FontWeight.bold,
                                             fontSize: 16)),
                                     TextSpan(
                                         text:
-                                            'Press the black button on the left side of your hotspot, wait for the hotspot LED to turn blue.\n',
+                                            'Power cycle your hotspot (or press Bluetooth pairing button on back if it has one), wait 1 minute.\n',
                                         style: TextStyle(fontSize: 16)),
                                     TextSpan(
-                                        text: 'RAK Hotspot: ',
+                                        text: 'Bobcat: ',
                                         style: TextStyle(
                                             fontWeight: FontWeight.bold,
                                             fontSize: 16)),
                                     TextSpan(
                                         text:
-                                            'Power cycle your hotspot, wait 1 minute.\n',
+                                            'When light is green, insert pin into rear Bluetooth hole until light turns blue.\n',
+                                        style: TextStyle(fontSize: 16)),
+                                    TextSpan(
+                                        text: 'SenseCAP: ',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16)),
+                                    TextSpan(
+                                        text:
+                                            'Hold rear button until blue light blinks slowly (15+ seconds).\n',
+                                        style: TextStyle(fontSize: 16)),
+                                    TextSpan(
+                                        text: 'Helium (Original): ',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16)),
+                                    TextSpan(
+                                        text:
+                                            'Press black button on the left side of your hotspot, wait for hotspot LED to turn blue.\n',
                                         style: TextStyle(fontSize: 16)),
                                     TextSpan(
                                         text: '\nStep 2. Scan for Hotspot\n',
